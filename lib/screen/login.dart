@@ -11,7 +11,7 @@ class TampilanLogin extends StatefulWidget {
 class _TampilanLoginState extends State<TampilanLogin> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  
+
   //mengecek login logout dan status akun
   final _auth = FirebaseAuth.instance;
 
@@ -31,7 +31,10 @@ class _TampilanLoginState extends State<TampilanLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Halaman Log in")),
+      appBar: AppBar(
+        title: Text("Halaman Log in"),
+        backgroundColor: const Color.fromARGB(255, 26, 180, 160),
+        ),
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
@@ -39,6 +42,7 @@ class _TampilanLoginState extends State<TampilanLogin> {
           children: [
             TextField(
               controller: _emailController
+              
               ),
             TextField(
               controller: _passwordController

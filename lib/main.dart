@@ -37,7 +37,7 @@ class AuthWrapper extends StatelessWidget {
           return CircularProgressIndicator();
         }
         if(snapshot.hasData){
-          return TampilanHome();
+          return Homepage();
         }
         return TampilanLogin();
       },
