@@ -12,19 +12,23 @@ class _TampilanLoginState extends State<TampilanLogin> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  //mengecek login logout dan status akun
   final _auth = FirebaseAuth.instance;
+  final _formKey = GlobalKey<FormState>();
+
+  bool _isPasswordVisible = false;
 
   Future<void> _login() async {
+    if (!_formKey.currentState!.validate()) return;
+
     try {
       await _auth.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message ?? 'Login Gagal')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? 'Login gagal')),
+      );
     }
   }
 
@@ -32,27 +36,74 @@ class _TampilanLoginState extends State<TampilanLogin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Halaman Log in"),
+        title: const Text("Halaman Login"),
         backgroundColor: const Color.fromARGB(255, 26, 180, 160),
-        ),
+      ),
       body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _emailController
-              
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Email tidak boleh kosong';
+                  }
+                  if (!value.contains('@')) {
+                    return 'Format email tidak valid';
+                  }
+                  return null;
+                },
               ),
-            TextField(
-              controller: _passwordController
+
+              const SizedBox(height: 12),
+
+              TextFormField(
+                controller: _passwordController,
+                obscureText: !_isPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Password tidak boleh kosong';
+                  }
+                  if (value.length < 6) {
+                    return 'Password minimal 6 karakter';
+                  }
+                  return null;
+                },
               ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: _login, 
-              child: Text("Login")
+
+              const SizedBox(height: 16),
+
+              ElevatedButton(
+                onPressed: _login,
+                child: const Text("Login"),
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );
